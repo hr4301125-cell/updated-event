@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - EventPro</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* small admin-specific styles to complement style.css */
+    .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .small{max-width:480px}
+    .controls{display:flex;gap:8px;align-items:center}
+    table{width:100%;border-collapse:collapse}
+    table th, table td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+    .img-thumb{width:120px;height:70px;object-fit:cover;border-radius:6px}
+    .search{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Admin Portal</h2>
+      <div>
+        <button id="gotoDashboard" class="btn">Dashboard</button>
+        <button id="logoutAdmin" class="btn">Logout</button>
+      </div>
+    </header>
+
+    <section class="admin-grid" style="margin-top:18px">
+      <!-- Left: Package management -->
+      <div>
+        <div class="card">
+          <h3>Add / Edit Package</h3>
+          <form id="pkgForm" class="small">
+            <input type="hidden" id="pkgId">
+            <input id="pkgName" placeholder="Package Name" required>
+            <input id="pkgCategory" placeholder="Category" required>
+            <input id="pkgPrice" placeholder="Price" required type="number">
+            <textarea id="pkgDesc" placeholder="Description" required></textarea>
+            <label>Image (optional)</label>
+            <input id="pkgImage" type="file" accept="image/*">
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button class="btn" type="submit">Save Package</button>
+              <button id="resetForm" class="btn" type="button">Reset</button>
+            </div>
+          </form>
+        </div>
+
+         <div class="card" style="margin-top:12px">
+          <h3>Existing Packages</h3>
+          <div id="pkgList"></div>
+        </div>
+      </div>
+
+
+      <!-- Admin form (put inside admin.html) -->
+  <div class="card">
+  <h3>Add / Edit Package</h3>
+  <form id="pkgForm" class="small">
+    <input type="hidden" id="pkgId">
+    <input id="pkgName" placeholder="Package Name" required>
+    <input id="pkgCategory" placeholder="Category" required>
+    <input id="pkgPrice" placeholder="Price" required type="number">
+    <textarea id="pkgDesc" placeholder="Description" required></textarea>
+    <label>Image (optional)</label>
+    <input id="pkgImage" type="file" accept="image/*">
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn" type="submit">Save Package</button>
+      <button id="resetForm" class="btn" type="button">Reset</button>
+    </div>
+  </form>
+</div>
+
+<!-- Packages listing container -->
+<div id="pkgList"></div>
+
+
+      <!-- Right: Bookings + tools -->
+      <div>
+        <div class="card">
+          <h3>Bookings</h3>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <input id="searchBookings" class="search" placeholder="Search by name, email, package...">
+            <button id="exportCsv" class="btn">Export CSV</button>
+            <button id="clearBookings" class="btn">Clear All</button>
+          </div>
+          <div id="bookingStats" style="margin-bottom:10px"></div>
+          <div id="bookingsTable" style="max-height:380px;overflow:auto"></div>
+        </div>
+
+          <div class="card" style="margin-top:12px">
+          <h3>Quick Actions</h3>
+          <div class="controls">
+            <button id="refreshData" class="btn">Refresh</button>
+            <button id="seedDemo" class="btn">Seed Demo Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // auth guard (simple session check)
+    const session = JSON.parse(localStorage.getItem('ems_session')||'null');
+    if(!session || session.role !== 'admin'){
+      if(confirm('Not logged in as admin. Go to login?')) location.href = 'login.html';
+      else document.body.innerHTML = '<p style="padding:20px">Access denied</p>';
+    }
+
+    // utils
+    const currency = x => '₹' + Number(x).toLocaleString('en-IN');
+
+    // load data helpers
+    function getPackages(){ return JSON.parse(localStorage.getItem('packages')||'[]'); }
+    function setPackages(arr){ localStorage.setItem('packages', JSON.stringify(arr)); }
+    function getBookings(){ return JSON.parse(localStorage.getItem('bookings')||'[]'); }
+    function setBookings(arr){ localStorage.setItem('bookings', JSON.stringify(arr)); }
+
+      // render packages list
+    function renderPackages(){
+      const pkgs = getPackages();
+      const el = document.getElementById('pkgList');
+      el.innerHTML = '';
+      if(pkgs.length === 0) el.textContent = 'No packages yet.';
+      pkgs.forEach(p => {
+        const div = document.createElement('div'); div.className = 'card';
+        div.style.marginBottom = '8px';
+        div.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <img src="${p.img||'https://picsum.photos/seed/'+p.id+'/200/120'}" class="img-thumb">
+            <div style="flex:1">
+              <strong>${p.name}</strong><br><small>${p.category} • ${currency(p.price)}</small>
+              <p style="margin:6px 0">${p.desc}</p>
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="editPkg(${p.id})">Edit</button>
+                <button onclick="deletePkg(${p.id})" class="btn">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+        el.appendChild(div);
+      });
+    }
+
+    // edit/delete functions
+    window.editPkg = function(id){
+      const pkgs = getPackages();
+      const p = pkgs.find(x=>x.id==id);
+      if(!p) return alert('Package not found');
+      document.getElementById('pkgId').value = p.id;
+      document.getElementById('pkgName').value = p.name;
+      document.getElementById('pkgCategory').value = p.category;
+      document.getElementById('pkgPrice').value = p.price;
+      document.getElementById('pkgDesc').value = p.desc;
+      // image input left to user - can't set file programmatically
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    
+    function deletePkg(id){
+      if(!confirm('Delete this package?')) return;
+      const pkgs = getPackages().filter(x=>x.id!=id);
+      setPackages(pkgs);
+      renderPackages();
+      alert('Deleted');
+    }
+
+    // package form save with image upload -> store as base64
+    document.getElementById('pkgForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const idField = document.getElementById('pkgId').value;
+      const name = document.getElementById('pkgName').value.trim();
+      const category = document.getElementById('pkgCategory').value.trim();
+      const price = Number(document.getElementById('pkgPrice').value);
+      const desc = document.getElementById('pkgDesc').value.trim();
+      const fileInput = document.getElementById('pkgImage');
+
+      // handle image as base64 (if provided)
+      let base64 = '';
+      if(fileInput.files && fileInput.files[0]){
+        base64 = await fileToBase64(fileInput.files[0]);
+      }
+
+      const pkgs = getPackages();
+      if(idField){
+        // update
+        const idx = pkgs.findIndex(x=>x.id==idField);
+        if(idx>-1){
+          pkgs[idx].name = name;
+          pkgs[idx].category = category;
+          pkgs[idx].price = price;
+          pkgs[idx].desc = desc;
+          if(base64) pkgs[idx].img = base64;
+        }
+      } else {
+        const nid = Date.now();
+        pkgs.push({ id: nid, name, category, price, desc, img: base64 });
+      }
+      setPackages(pkgs);
+      renderPackages();
+      this.reset();
+      document.getElementById('pkgId').value = '';
+      alert('Package saved.');
+    });
+
+    function fileToBase64(file){
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = ()=> res(fr.result);
+        fr.onerror = ()=> rej('err');
+        fr.readAsDataURL(file);
+      });
+    }
+
+     document.getElementById('resetForm').addEventListener('click', ()=>{ document.getElementById('pkgForm').reset(); document.getElementById('pkgId').value=''; });
+
+    // BOOKINGS: render table + search + export
+    function renderBookings(filter=''){
+      const bookings = getBookings();
+      const container = document.getElementById('bookingsTable');
+      container.innerHTML = '';
+      const filtered = bookings.filter(b => {
+        if(!filter) return true;
+        const q = filter.toLowerCase();
+        return (b.name||'').toLowerCase().includes(q) || (b.email||'').toLowerCase().includes(q) ||
+               (b.package && b.package.name && b.package.name.toLowerCase().includes(q));
+      });
+
+      // stats
+      document.getElementById('bookingStats').innerHTML = `<strong>Total bookings:</strong> ${bookings.length} • <strong>Showing:</strong> ${filtered.length}`;
+
+      if(filtered.length===0){ container.innerHTML = '<p>No bookings.</p>'; return; }
+
+      const table = document.createElement('table');
+      table.innerHTML = `<thead><tr><th>Booking ID</th><th>Name</th><th>Package</th><th>Date / Time</th><th>Phone</th><th>Txn</th></tr></thead>`;
+      const tbody = document.createElement('tbody');
+      filtered.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${b.id}</td>
+          <td>${b.name}<br><small>${b.email}</small></td>
+          <td>${b.package?b.package.name:'-'}</td>
+          <td>${b.date} ${b.time||''}</td>
+          <td>${b.phone||''}</td>
+          <td>${b.txn||''}</td>`;
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      container.appendChild(table);
+    }
+
+    // search bookings handler
+    document.getElementById('searchBookings').addEventListener('input', function(){ renderBookings(this.value.trim()); });
+
+    // export CSV
+    document.getElementById('exportCsv').addEventListener('click', function(){
+      const bookings = getBookings();
+      if(bookings.length===0) return alert('No bookings to export');
+      const rows = [['id','name','email','phone','package','date','time','txn']];
+      bookings.forEach(b => {
+        rows.push([b.id, b.name, b.email, b.phone, (b.package && b.package.name) ? b.package.name : '', b.date, b.time||'', b.txn||'']);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+      a.download = 'bookings.csv';
+      a.click();
+    });
+
+    document.getElementById('clearBookings').addEventListener('click', function(){
+      if(!confirm('Clear all bookings?')) return;
+      setBookings([]);
+      renderBookings();
+      alert('Cleared');
+    });
+
+    // refresh and seed
+    document.getElementById('refreshData').addEventListener('click', function(){ renderPackages(); renderBookings(); updateStats(); });
+    document.getElementById('seedDemo').addEventListener('click', function(){
+      // quick demo add if packages/bookings empty
+      if(getPackages().length===0){
+        const demo = [
+          {id:101,name:'Demo Wedding',category:'Weddings',price:20000,desc:'Demo pack',img:'https://picsum.photos/seed/demo1/400/240'},
+        ];
+        setPackages(demo);
+      }
+      if(getBookings().length===0){
+        const b = [{id:Date.now(), name:'Rohit', email:'rohit@example.com', phone:'9876543210', date:'2025-12-12', time:'18:00', txn:'TXNDEMO1', package:getPackages()[0]}];
+        setBookings(b);
+      }
+      renderPackages(); renderBookings();
+    });
+
+    function updateStats(){
+      const bookings = getBookings();
+      const totalRevenue = bookings.reduce((s,b)=> s + (b.package? (b.package.price||0) : 0), 0);
+      const el = document.getElementById('bookingStats');
+      el.innerHTML = `<strong>Total bookings:</strong> ${bookings.length} • <strong>Revenue:</strong> ${currency(totalRevenue)}`;
+    }
+
+    // initial render
+    renderPackages();
+    renderBookings();
+    updateStats();
+
+    // logout
+    document.getElementById('logoutAdmin').addEventListener('click', ()=>{ localStorage.removeItem('ems_session'); location.href = 'index.html'; });
+    document.getElementById('gotoDashboard').addEventListener('click', ()=> location.href='dashboard.html');
+  </script>
+</body>
+</html>

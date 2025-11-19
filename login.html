@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - EventPro</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ✅ INIT DEFAULT ADMIN USER -->
+<script>
+if (!localStorage.getItem("ems_users")) {
+    const defUsers = [
+        {
+            id: 1,
+            name: "Admin",
+            email: "admin@ems.com",
+            password: "admin123",
+            role: "admin"
+        }
+    ];
+    localStorage.setItem("ems_users", JSON.stringify(defUsers));
+}
+</script>
+
+<div class="container">
+<h2>Login</h2>
+
+<form id="loginForm" class="card small">
+<input type="email" id="email" placeholder="Email" required>
+<input type="password" id="password" placeholder="Password" required>
+<button class="btn" type="submit">Login</button>
+</form>
+
+<p>Demo Admin: admin@ems.com / admin123</p>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e){
+e.preventDefault();
+
+const email = document.getElementById('email').value;
+const pw = document.getElementById('password').value;
+const users = JSON.parse(localStorage.getItem('ems_users') || '[]');
+const u = users.find(x => x.email === email && x.password === pw);
+
+if (!u) return alert('Invalid credentials');
+
+// Save session
+localStorage.setItem('ems_session', JSON.stringify({
+    id: u.id, name: u.name, email: u.email, role: u.role
+}));
+
+alert('Login successful as ' + u.role);
+
+if (u.role === 'admin') {
+    window.location.href = 'dashboard.html';
+} else {
+    window.location.href = 'index.html';
+}
+});
+</script>
+
+</body>
+</html>

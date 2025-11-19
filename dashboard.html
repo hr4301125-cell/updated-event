@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stats { display:flex; gap:20px; flex-wrap:wrap; }
+        .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); width:260px; }
+        canvas { background:#fff; padding:15px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+<div class="section">
+    <h2>Advanced Dashboard</h2>
+
+    <div class="stats">
+        <div class="card"><h3>Total Bookings</h3><h1 id="dashBookings">0</h1></div>
+        <div class="card"><h3>Total Revenue</h3><h1 id="dashRevenue">₹0</h1></div>
+        <div class="card"><h3>Top Package</h3><h1 id="topPackage">-</h1></div>
+    </div>
+
+    <h3>Monthly Revenue Chart</h3>
+    <canvas id="revChart" width="400" height="200"></canvas>
+
+    <h3>Category-wise Bookings</h3>
+    <canvas id="catChart" width="400" height="200"></canvas>
+</div>
+
+<script src="script.js"></script>
+<script>
+loadDashBookings();
+loadDashRevenue();
+loadLatestBookings && loadLatestBookings();
+
+// Monthly Revenue Chart
+const revCtx = document.getElementById('revChart');
+new Chart(revCtx, {
+    type:'line',
+    data:{ labels:['Jan','Feb','Mar','Apr','May','Jun'], datasets:[{ label:'Revenue', data:[20000,35000,15000,50000,25000,60000] }] },
+});
+
+// Category Chart
+const catCtx = document.getElementById('catChart');
+new Chart(catCtx, {
+    type:'bar',
+    data:{ labels:['Wedding','Birthday','Corporate','Concert','Fest'], datasets:[{ label:'Bookings', data:[5,3,4,2,1] }] },
+});
+
+</script>
+</body>
+</html>

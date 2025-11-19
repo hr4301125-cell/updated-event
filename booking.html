@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking - EventPro</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PDF Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="section">
+
+    <h2>Booking</h2>
+
+    <!-- Show Selected Package -->
+    <div id="pkg" class="card">
+    </div>
+   <!-- Booking Form -->
+    <form id="bookForm" class="card">
+
+        <input id="name" placeholder="Your Name" required>
+        <input id="email" placeholder="Email" required>
+        <input id="phone" placeholder="Phone" required>
+
+        <label>Event Date:</label>
+        <input type="date" id="date" required>
+
+        <label>Event Time:</label>
+        <input type="time" id="time" required>
+
+        <label>Payment Method</label>
+        <select id="method">
+            <option>UPI</option>
+            <option>Card</option>
+        </select>
+
+        <input id="txn" placeholder="Mock Transaction ID" required>
+
+        <button class="btn" type="submit">Confirm Booking</button>
+    </form>
+
+    <div id="done"></div>
+</div>
+
+<script>
+// ✅ Get selected package
+const pkg = JSON.parse(localStorage.getItem('selected'));
+
+document.getElementById('pkg').innerHTML = `
+    <h3>${pkg.name}</h3>
+    <p>${pkg.desc}</p>
+    <h4>${currency(pkg.price)}</h4>
+`;
+
+
+// ✅ Booking Form Submit
+bookForm.onsubmit = e => {
+    e.preventDefault();
+
+    const name  = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const date  = document.getElementById('date').value;
+    const time  = document.getElementById('time').value;
+    const txn   = document.getElementById('txn').value;
+
+    // ✅ FIXED: always create an array if empty
+    const all = JSON.parse(localStorage.getItem('bookings')) || [];
+
+    const id = Date.now();
+
+    all.push({
+        id,
+        name,
+        email,
+        phone,
+        date,
+        time,
+        txn,
+        package: pkg
+    });
+
+    localStorage.setItem('bookings', JSON.stringify(all));
+
+    // ✅ Save LAST TICKET PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text("Event Ticket", 20, 20);
+    doc.text(`Name: ${name}`, 20, 40);
+    doc.text(`Event: ${pkg.name}`, 20, 50);
+    doc.text(`Date: ${date}`, 20, 60);
+    doc.text(`Time: ${time}`, 20, 70);
+    doc.text(`Amount: ${currency(pkg.price)}`, 20, 80);
+
+    const pdf = doc.output("datauristring");
+    localStorage.setItem("last_ticket", pdf);
+
+     // ✅ Show Success Message
+    done.innerHTML = `
+        <div class='card'>
+            <h3>✅ Booking Successful</h3>
+            <button class='btn' onclick='downloadTicket()'>Download Ticket</button>
+            <button class='btn' onclick='location="index.html"'>Go Home</button>
+        </div>
+    `;
+};
+
+
+// ✅ Currency Formatter
+function currency(x) {
+    return "₹" + Number(x).toLocaleString("en-IN");
+}
+
+
+// ✅ PDF Download Function
+function downloadTicket() {
+    const pdf = localStorage.getItem("last_ticket");
+    const a = document.createElement("a");
+    a.href = pdf;
+    a.download = "ticket.pdf";
+    a.click();
+}
+</script>
+
+</body>
+</html>

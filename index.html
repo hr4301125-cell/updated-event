@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EventPro – Home</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+      <h1 class="logo">Event<span>Pro</span></h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="#categories">Categories</a>
+        <a href="#packages">Packages</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="#upcoming">Upcoming</a>
+        <a href="booking.html">Booking</a>
+        <a href="login.html">Login</a>
+        <a href="admin.html" class="btn">Admin</a>
+      </nav>
+       </div>
+  </header>
+
+  <main class="container">
+    <!-- Attractive Hero -->
+    <section id="hero" class="hero-section" style="background:url('https://picsum.photos/id/1043/1400/600');background-size:cover;background-position:center;padding:80px;border-radius:12px;margin-top:16px;">
+      <div style="background:rgba(0,0,0,0.45);padding:30px;border-radius:10px;color:#fff;max-width:780px;">
+        <h2 style="font-size:34px;margin:0 0 8px;">Make Your Events Extraordinary</h2>
+        <p style="margin:0 0 16px;color:#f0e9ff;">Book premium events, secure mock payment and instantly download tickets. Choose from 10 curated packages across categories.</p>
+        <a href="#packages" class="btn large">Explore Packages</a>
+        <div style="margin-top:16px;font-weight:700;">Total Bookings: <span id="totalBookingCount">0</span></div>
+      </div>
+    </section>
+
+ <!-- Categories -->
+    <section id="categories" class="section">
+      <h2>Event Categories</h2>
+      <div class="grid">
+        <div class="card">Weddings</div>
+        <div class="card">Corporate</div>
+        <div class="card">Birthdays</div>
+        <div class="card">Concerts</div>
+        <div class="card">College Fest</div>
+      </div>
+    </section>
+
+    <!-- Packages -->
+    <section id="packages" class="section">
+      <h2>Event Packages (10)</h2>
+      <div id="package-list" class="grid"></div>
+    </section>
+
+    <!-- Upcoming -->
+    <section id="upcoming" class="section">
+      <h2>Upcoming Events</h2>
+      <ul id="upcoming-list"></ul>
+    </section>
+
+      <!-- Last Ticket -->
+    <section id="ticket" class="section">
+      <h2>Last Ticket</h2>
+      <div id="ticket-output" class="card">No ticket yet.</div>
+      <button id="downloadTicket" class="btn" style="display:none;margin-top:8px;">Download Last Ticket</button>
+    </section>
+  </main>
+
+  <footer style="text-align:center;padding:18px;">© 2025 EventPro — Final Year Project</footer>
+
+  <!-- Shared script (loads packages, upcoming, booking count) -->
+  <script src="script.js"></script>
+  
+ <!-- Small inline helpers -->
+  <script>
+    // download last ticket from storage
+    const btn = document.getElementById('downloadTicket');
+    const last = localStorage.getItem('last_ticket') || localStorage.getItem('ems_last_ticket_pdf');
+    if(last){
+      document.getElementById('ticket-output').textContent = 'Last ticket ready to download.';
+      btn.style.display = 'inline-block';
+      btn.addEventListener('click', ()=> {
+        const a = document.createElement('a'); a.href = last; a.download = 'ticket.pdf'; a.click();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+body{margin:0;font-family:Poppins;background:#f5f6ff;color:#111}
+.header{background:#111;color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center}
+.logo span{color:#ff2f8b}
+nav a{color:white;margin-left:15px;text-decoration:none;font-weight:600}
+.btn{background:#ff2f8b;padding:8px 15px;border-radius:8px;color:#fff;text-decoration:none}
+.large{padding:12px 22px;font-size:18px}
+.hero-section{background:url('https://picsum.photos/id/1043/1400/600');background-size:cover;color:white;padding:120px 40px;text-align:center}
+.hero-content{background:rgba(0,0,0,0.5);display:inline-block;padding:30px;border-radius:12px}
+.section{padding:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+#package-list img{width:100%;height:180px;border-radius:12px;object-fit:cover}
+#upcoming-list li{background:white;padding:15px;border-radius:10px;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,0.1)}
