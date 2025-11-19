@@ -11,7 +11,7 @@ if (!localStorage.getItem("db_init")) {
     {id:3,name:"Corporate Basic",img:"corrporet image.jpg",price:12000,desc:"Hall + Snacks + Projector",category:"Corporate"},
     {id:4,name:"Corporate Premium",img:"corporet primium.jpg",price:30000,desc:"Hall + LED Screen + Lunch",category:"Corporate"},
 
-    {id:5,name:"Birthday Fun",img:"https://images.unsplash.com/photo-1598514982267-1b3a754925f4",price:8000,desc:"Cake + Games + Décor",category:"Birthday"},
+    {id:5,name:"Birthday Fun",img:"fun.jpg",price:8000,desc:"Cake + Games + Décor",category:"Birthday"},
     {id:6,name:"Birthday Premium",img:"https://images.unsplash.com/photo-1555685812-4b943f1cb0eb",price:20000,desc:"Theme + Magician + Photoshoot",category:"Birthday"},
 
     {id:7,name:"Concert Basic",img:"https://images.unsplash.com/photo-1506157786151-b8491531f063",price:25000,desc:"Stage + Basic Sound",category:"Concert"},
@@ -340,6 +340,7 @@ if(document.readyState !== 'loading'){
     if(document.getElementById('pkgList')) initAdminPage();
   });
 }
+
 
 
 
