@@ -8,7 +8,7 @@ if (!localStorage.getItem("db_init")) {
     {id:1,name:"Wedding Basic",img:"pastel-drapes-simple-wedding-decorations.png",price:15000,desc:"Decoration + Music + Photography",category:"Wedding"},
     {id:2,name:"Wedding Royal",img:"1ba90259af4a5dd568f46a17a8c47ebb.jpg",price:35000,desc:"Premium Décor + DJ + Video",category:"Wedding"},
 
-    {id:3,name:"Corporate Basic",img:"https://images.unsplash.com/photo-1515162305288-9f5edb5b0f36",price:12000,desc:"Hall + Snacks + Projector",category:"Corporate"},
+    {id:3,name:"Corporate Basic",img:"corrporet image.jpg",price:12000,desc:"Hall + Snacks + Projector",category:"Corporate"},
     {id:4,name:"Corporate Premium",img:"https://images.unsplash.com/photo-1551836022-d5d88e9218df",price:30000,desc:"Hall + LED Screen + Lunch",category:"Corporate"},
 
     {id:5,name:"Birthday Fun",img:"https://images.unsplash.com/photo-1598514982267-1b3a754925f4",price:8000,desc:"Cake + Games + Décor",category:"Birthday"},
@@ -340,6 +340,7 @@ if(document.readyState !== 'loading'){
     if(document.getElementById('pkgList')) initAdminPage();
   });
 }
+
 
 
 
