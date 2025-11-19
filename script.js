@@ -17,7 +17,7 @@ if (!localStorage.getItem("db_init")) {
     {id:7,name:"Concert Basic",img:"consert fun.jpg",price:25000,desc:"Stage + Basic Sound",category:"Concert"},
     {id:8,name:"Concert Pro",img:"consert pro.jpg",price:60000,desc:"Dolby Sound + Lighting",category:"Concert"},
 
-    {id:9,name:"Fest Basic",img:"https://images.unsplash.com/photo-1541855491-8d95e91f7b32",price:15000,desc:"Stage + Mic + Speakers",category:"Fest"},
+    {id:9,name:"Fest Basic",img:"fest fun.jpg",price:15000,desc:"Stage + Mic + Speakers",category:"Fest"},
     {id:10,name:"Fest Premium",img:"https://images.unsplash.com/photo-1548191265-cc70d3d45ba1",price:45000,desc:"DJ + Laser Show + Stage",category:"Fest"}
 ];
 
@@ -340,6 +340,7 @@ if(document.readyState !== 'loading'){
     if(document.getElementById('pkgList')) initAdminPage();
   });
 }
+
 
 
 
