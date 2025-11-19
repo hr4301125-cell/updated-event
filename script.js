@@ -5,7 +5,7 @@
 if (!localStorage.getItem("db_init")) {
 
    const packages = [
-    {id:1,name:"Wedding Basic",img:"https://images.unsplash.com/photo-1529634806980-85d26f7f3121",price:15000,desc:"Decoration + Music + Photography",category:"Wedding"},
+    {id:1,name:"Wedding Basic",img:"pastel-drapes-simple-wedding-decorations.png",price:15000,desc:"Decoration + Music + Photography",category:"Wedding"},
     {id:2,name:"Wedding Royal",img:"https://images.unsplash.com/photo-1522673607200-164d1b6ce486",price:35000,desc:"Premium Décor + DJ + Video",category:"Wedding"},
 
     {id:3,name:"Corporate Basic",img:"https://images.unsplash.com/photo-1515162305288-9f5edb5b0f36",price:12000,desc:"Hall + Snacks + Projector",category:"Corporate"},
@@ -340,4 +340,5 @@ if(document.readyState !== 'loading'){
     if(document.getElementById('pkgList')) initAdminPage();
   });
 }
+
 
